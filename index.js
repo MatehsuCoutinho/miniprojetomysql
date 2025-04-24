@@ -119,6 +119,21 @@ app.post('/books/updatebook', (req, res) => {
 
 })
 
+app.post('/books/remove/:id', (req, res) => {
+    const id = req.params.id
+
+    const query = `DELETE FROM books WHERE id = ${id}`
+
+    conn.query(query, (err) => {
+        if (err) {
+            console.log(err)
+            return
+        }
+
+        res.redirect('/books')
+    })
+})
+
 conn.connect(function (err) {
 
     if (err) {
