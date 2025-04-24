@@ -31,6 +31,8 @@ const conn = mysql.createConnection({
     database: process.env.MYSQL_DATABASE
 })
 
+
+//inserir livro
 app.post('/books/insertbook', (req, res) => {
 
     const title = req.body.title
@@ -46,6 +48,7 @@ app.post('/books/insertbook', (req, res) => {
     })
 })
 
+//ver lista de livros cadastrados
 app.get('/books', (req, res) => {
     const query = 'SELECT * FROM books'
 
@@ -62,6 +65,7 @@ app.get('/books', (req, res) => {
     })
 })
 
+//ver livro baseado na id
 app.get('/books/:id', (req, res) => {
     const id = req.params.id
 
@@ -76,6 +80,43 @@ app.get('/books/:id', (req, res) => {
 
         res.render('book', { book })
     })
+})
+
+
+//pegando dados para poder editar
+app.get('/books/edit/:id', (req, res) => {
+    const id = req.params.id
+
+    const query = `SELECT * FROM books WHERE id = ${id}`
+
+    conn.query(query, function (err, data) {
+        if (err) {
+            console.log(err)
+            return
+        }
+        const book = data[0]
+
+        res.render('editbook', { book })
+    })
+})
+
+//editando dados
+app.post('/books/updatebook', (req, res) => {
+    const id = req.body.id
+    const title = req.body.title
+    const pageqty = req.body.pageqty
+
+    const query = `UPDATE books SET title = ?, pageqty = ? WHERE id = ${id}`
+
+    conn.query(query, [title, pageqty], (err) => {
+        if (err) {
+            console.log(err)
+            return
+        }
+
+        res.redirect('/books')
+    })
+
 })
 
 conn.connect(function (err) {
